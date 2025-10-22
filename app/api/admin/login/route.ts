@@ -8,7 +8,7 @@ const ADMIN_PASSWORD = "MindXGlobal2025!"
 // Session storage (in production, use Redis or a database)
 const sessions = new Map<string, { expiresAt: number }>()
 
-// Clean up expired sessions every minute
+// Clean up expired sessions every minutee
 setInterval(() => {
   const now = Date.now()
   for (const [sessionId, session] of sessions.entries()) {
