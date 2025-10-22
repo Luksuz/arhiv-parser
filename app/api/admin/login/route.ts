@@ -28,14 +28,14 @@ export async function POST(req: NextRequest) {
 
     if (username === ADMIN_USERNAME && password === ADMIN_PASSWORD) {
       const sessionId = generateSessionId()
-      const expiresAt = Date.now() + 5 * 60 * 1000 // 5 minutes
+      const expiresAt = Date.now() + 20 * 60 * 1000 // 20 minutes
 
       sessions.set(sessionId, { expiresAt })
 
       const response = NextResponse.json({ 
         success: true, 
         message: "Login successful",
-        expiresIn: 300 // 5 minutes in seconds
+        expiresIn: 20 * 60 * 1000 // 20 minutes
       })
 
       // Set cookie
@@ -43,7 +43,7 @@ export async function POST(req: NextRequest) {
         httpOnly: true,
         secure: process.env.NODE_ENV === "production",
         sameSite: "strict",
-        maxAge: 300, // 5 minutes
+        maxAge: 20 * 60, // 20 minutes in seconds
       })
 
       return response

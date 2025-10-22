@@ -571,7 +571,7 @@ export default function DocumentParserPage() {
               </Button>
 
               <p className="text-xs text-slate-500 dark:text-slate-400 text-center">
-                Session expires after 5 minutes of login
+                Session expires after 20 minutes of login
               </p>
 
               <div className="pt-4 border-t border-slate-200 dark:border-slate-700">
