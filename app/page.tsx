@@ -215,11 +215,11 @@ export default function DocumentParserPage() {
       if (data.success) {
         setIsAuthenticated(true)
         setLoginPassword("")
-        // Auto-logout after 5 minutes
+        // Auto-logout after 1 hour
         setTimeout(() => {
           setIsAuthenticated(false)
           setLoginError("Session expired. Please login again.")
-        }, 5 * 60 * 1000)
+        }, 60 * 60 * 1000)
       } else {
         setLoginError("Invalid password")
       }
@@ -528,11 +528,19 @@ export default function DocumentParserPage() {
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.5 }}
-                className="bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-lg p-4 text-left"
+                className="bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-lg p-4 text-left space-y-3"
               >
                 <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
                   Transform unstructured archival documents into organized, structured data. Our AI analyzes and extracts Croatian archival records following standard schemas, making historical data searchable and exportable.
                 </p>
+                <div className="flex items-start gap-2 pt-2 border-t border-slate-200 dark:border-slate-700">
+                  <div className="flex-shrink-0 mt-0.5">
+                    <div className="w-1.5 h-1.5 rounded-full bg-amber-500" />
+                  </div>
+                  <p className="text-xs text-slate-500 dark:text-slate-500 leading-relaxed">
+                    <strong className="text-slate-600 dark:text-slate-400">Demo Version:</strong> Extraction limited to 15 records per document. CSV export is disabled in demo mode.
+                  </p>
+                </div>
               </motion.div>
             </CardHeader>
             <CardContent className="space-y-4">
@@ -571,7 +579,7 @@ export default function DocumentParserPage() {
               </Button>
 
               <p className="text-xs text-slate-500 dark:text-slate-400 text-center">
-                Session expires after 20 minutes of login
+                Session expires after 1 hour of login
               </p>
 
               <div className="pt-4 border-t border-slate-200 dark:border-slate-700">
@@ -829,6 +837,19 @@ export default function DocumentParserPage() {
                 Upload Document
               </CardTitle>
               <CardDescription className="text-base">Supported formats: PDF, TXT, DOC, DOCX</CardDescription>
+              <motion.div
+                initial={{ opacity: 0, y: -5 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.8 }}
+                className="mt-3 flex items-start gap-2 p-3 bg-amber-50 dark:bg-amber-900/10 border border-amber-200 dark:border-amber-800/30 rounded-lg"
+              >
+                <div className="flex-shrink-0 mt-0.5">
+                  <div className="w-1.5 h-1.5 rounded-full bg-amber-500" />
+                </div>
+                <p className="text-xs text-amber-700 dark:text-amber-400 leading-relaxed">
+                  <strong>Demo Limitation:</strong> Extraction limited to 15 records per document • CSV export disabled
+                </p>
+              </motion.div>
             </CardHeader>
             <CardContent className="relative z-10">
               <div className="space-y-4">
@@ -974,16 +995,12 @@ export default function DocumentParserPage() {
                       animate={{ opacity: 1, scale: 1 }}
                       transition={{ delay: 0.3 }}
                     >
-                      <Button
-                        onClick={exportToCSV}
-                        variant="outline"
-                        size="sm"
-                        disabled={loading}
-                        className="gap-2 border-emerald-600 text-emerald-600 hover:bg-emerald-50 dark:border-emerald-400 dark:text-emerald-400"
-                      >
-                        <Download className="h-4 w-4" />
-                        Export CSV
-                      </Button>
+                      <div className="px-4 py-2 bg-slate-100 dark:bg-slate-800/50 rounded-lg border border-slate-300 dark:border-slate-700 flex items-center gap-2">
+                        <Lock className="h-4 w-4 text-slate-500 dark:text-slate-400" />
+                        <span className="text-xs font-medium text-slate-600 dark:text-slate-400">
+                          Export Locked (Demo)
+                        </span>
+                      </div>
                     </motion.div>
                   </div>
                 </CardHeader>
