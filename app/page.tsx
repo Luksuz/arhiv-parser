@@ -43,9 +43,9 @@ export default function DocumentParserPage() {
   const [startTime, setStartTime] = useState<number | null>(null)
   const [searchQuery, setSearchQuery] = useState("")
   const [columnDensity, setColumnDensity] = useState<"comfortable" | "compact">("comfortable")
-  const [isAdmin, setIsAdmin] = useState(false)
-  const [showAdminLogin, setShowAdminLogin] = useState(false)
-  const [adminPassword, setAdminPassword] = useState("")
+  const [isAuthenticated, setIsAuthenticated] = useState(false)
+  const [loginPassword, setLoginPassword] = useState("")
+  const [loginError, setLoginError] = useState<string | null>(null)
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFile = e.target.files?.[0]
@@ -199,37 +199,40 @@ export default function DocumentParserPage() {
     })
   }
 
-  // Admin login functions
-  const handleAdminLogin = async () => {
+  // Login functions
+  const handleLogin = async () => {
     try {
+      setLoginError(null)
       const response = await fetch("/api/admin/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ username: "admin", password: adminPassword }),
+        body: JSON.stringify({ username: "admin", password: loginPassword }),
       })
 
       const data = await response.json()
 
       if (data.success) {
-        setIsAdmin(true)
-        setShowAdminLogin(false)
-        setAdminPassword("")
+        setIsAuthenticated(true)
+        setLoginPassword("")
         // Auto-logout after 5 minutes
-        setTimeout(() => setIsAdmin(false), 5 * 60 * 1000)
+        setTimeout(() => {
+          setIsAuthenticated(false)
+          setLoginError("Session expired. Please login again.")
+        }, 5 * 60 * 1000)
       } else {
-        setError("Invalid admin password")
-        setTimeout(() => setError(null), 3000)
+        setLoginError("Invalid password")
       }
     } catch (err) {
-      setError("Login failed")
-      setTimeout(() => setError(null), 3000)
+      setLoginError("Login failed")
     }
   }
 
-  const handleAdminLogout = async () => {
+  const handleLogout = async () => {
     try {
       await fetch("/api/admin/login", { method: "DELETE" })
-      setIsAdmin(false)
+      setIsAuthenticated(false)
+      setExtractedData([])
+      setFile(null)
     } catch (err) {
       console.error("Logout failed", err)
     }
@@ -454,6 +457,126 @@ export default function DocumentParserPage() {
     link.click()
   }
 
+  // Show login screen if not authenticated
+  if (!isAuthenticated) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-gray-50 to-slate-100 dark:from-black dark:via-slate-950 dark:to-slate-900 relative overflow-hidden flex items-center justify-center">
+        {/* Animated background elements */}
+        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+          <motion.div
+            className="absolute -top-40 -right-40 w-80 h-80 bg-slate-300/5 dark:bg-slate-700/5 rounded-full blur-3xl"
+            animate={{
+              scale: [1, 1.2, 1],
+              rotate: [0, 90, 0],
+            }}
+            transition={{
+              duration: 20,
+              repeat: Infinity,
+              ease: "linear",
+            }}
+          />
+          <motion.div
+            className="absolute -bottom-40 -left-40 w-80 h-80 bg-gray-300/5 dark:bg-gray-700/5 rounded-full blur-3xl"
+            animate={{
+              scale: [1.2, 1, 1.2],
+              rotate: [0, -90, 0],
+            }}
+            transition={{
+              duration: 25,
+              repeat: Infinity,
+              ease: "linear",
+            }}
+          />
+        </div>
+
+        {/* Login Card */}
+        <motion.div
+          initial={{ opacity: 0, y: 20, scale: 0.95 }}
+          animate={{ opacity: 1, y: 0, scale: 1 }}
+          transition={{ duration: 0.6 }}
+          className="relative z-10 w-full max-w-md mx-4"
+        >
+          <Card className="border-slate-300/50 dark:border-slate-700/50 shadow-2xl backdrop-blur-sm bg-white/90 dark:bg-slate-900/90">
+            <CardHeader className="text-center space-y-4">
+              <motion.div
+                initial={{ scale: 0 }}
+                animate={{ scale: 1 }}
+                transition={{ delay: 0.3, type: "spring", stiffness: 200 }}
+                className="flex justify-center"
+              >
+                <div className="w-16 h-16 rounded-full bg-gradient-to-br from-slate-700 to-gray-900 dark:from-slate-200 dark:to-gray-100 flex items-center justify-center">
+                  <Shield className="h-8 w-8 text-white dark:text-slate-900" />
+                </div>
+              </motion.div>
+              <div>
+                <CardTitle className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-slate-900 via-gray-800 to-slate-900 dark:from-white dark:via-slate-200 dark:to-white">
+                  Archival Document Parser
+                </CardTitle>
+                <CardDescription className="mt-2 text-base">
+                  Enter your password to access the application
+                </CardDescription>
+              </div>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div>
+                <label className="text-sm font-medium text-slate-700 dark:text-slate-300 block mb-2">
+                  Password
+                </label>
+                <input
+                  type="password"
+                  value={loginPassword}
+                  onChange={(e) => setLoginPassword(e.target.value)}
+                  onKeyPress={(e) => e.key === "Enter" && handleLogin()}
+                  placeholder="Enter password"
+                  className="w-full px-4 py-3 border border-slate-300 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-900 focus:ring-2 focus:ring-slate-400 focus:outline-none text-base"
+                  autoFocus
+                />
+              </div>
+
+              {loginError && (
+                <motion.div
+                  initial={{ opacity: 0, height: 0 }}
+                  animate={{ opacity: 1, height: "auto" }}
+                  className="p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg"
+                >
+                  <p className="text-sm text-red-600 dark:text-red-400">{loginError}</p>
+                </motion.div>
+              )}
+
+              <Button
+                onClick={handleLogin}
+                className="w-full bg-gradient-to-r from-slate-800 to-gray-900 hover:from-slate-900 hover:to-black text-white shadow-lg text-base py-6"
+                size="lg"
+              >
+                <Lock className="mr-2 h-5 w-5" />
+                Login
+              </Button>
+
+              <p className="text-xs text-slate-500 dark:text-slate-400 text-center">
+                Session expires after 5 minutes of login
+              </p>
+
+              <div className="pt-4 border-t border-slate-200 dark:border-slate-700">
+                <p className="text-xs text-center text-slate-600 dark:text-slate-400">
+                  Demo built by{" "}
+                  <a
+                    href="https://mindxglobal.com"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="font-semibold hover:text-slate-900 dark:hover:text-slate-200 transition-colors"
+                  >
+                    MindX Global
+                  </a>{" "}
+                  🖤
+                </p>
+              </div>
+            </CardContent>
+          </Card>
+        </motion.div>
+      </div>
+    )
+  }
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-gray-50 to-slate-100 dark:from-black dark:via-slate-950 dark:to-slate-900 relative overflow-hidden">
       {/* Animated background elements */}
@@ -513,32 +636,21 @@ export default function DocumentParserPage() {
               Archival Document Parser
             </motion.h1>
             
-            {/* Admin Login Button */}
+            {/* Logout Button */}
             <motion.div
               initial={{ opacity: 0, scale: 0 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ delay: 0.5, type: "spring" }}
             >
-              {isAdmin ? (
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={handleAdminLogout}
-                  className="gap-2 border-emerald-600 text-emerald-600 hover:bg-emerald-50 dark:border-emerald-400 dark:text-emerald-400"
-                >
-                  <Shield className="h-4 w-4" />
-                  <LogOut className="h-4 w-4" />
-                </Button>
-              ) : (
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => setShowAdminLogin(true)}
-                  className="gap-2"
-                >
-                  <Lock className="h-4 w-4" />
-                </Button>
-              )}
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handleLogout}
+                className="gap-2 border-slate-600 text-slate-600 hover:bg-slate-50 dark:border-slate-400 dark:text-slate-400 dark:hover:bg-slate-800"
+                title="Logout"
+              >
+                <LogOut className="h-4 w-4" />
+              </Button>
             </motion.div>
           </div>
           
@@ -795,10 +907,6 @@ export default function DocumentParserPage() {
                         </motion.span>{" "}
                         / 15 record{extractedData.length !== 1 ? "s" : ""} extracted
                         {loading && " (updating in real-time...)"}
-                        <br />
-                        <span className="text-xs text-slate-500 dark:text-slate-400">
-                          Demo limit: First 10 rows clear • Rows 11-15 blurred
-                        </span>
                       </CardDescription>
                     </div>
                     <motion.div
@@ -806,24 +914,16 @@ export default function DocumentParserPage() {
                       animate={{ opacity: 1, scale: 1 }}
                       transition={{ delay: 0.3 }}
                     >
-                      {isAdmin ? (
-                        <Button
-                          onClick={exportToCSV}
-                          variant="outline"
-                          size="sm"
-                          disabled={loading}
-                          className="gap-2 border-emerald-600 text-emerald-600 hover:bg-emerald-50 dark:border-emerald-400 dark:text-emerald-400"
-                        >
-                          <Download className="h-4 w-4" />
-                          Export CSV
-                        </Button>
-                      ) : (
-                        <div className="px-4 py-2 bg-slate-100 dark:bg-slate-800/50 rounded-lg border border-slate-300 dark:border-slate-700">
-                          <span className="text-xs font-medium text-slate-600 dark:text-slate-400">
-                            🔒 Protected Demo
-                          </span>
-                        </div>
-                      )}
+                      <Button
+                        onClick={exportToCSV}
+                        variant="outline"
+                        size="sm"
+                        disabled={loading}
+                        className="gap-2 border-emerald-600 text-emerald-600 hover:bg-emerald-50 dark:border-emerald-400 dark:text-emerald-400"
+                      >
+                        <Download className="h-4 w-4" />
+                        Export CSV
+                      </Button>
                     </motion.div>
                   </div>
                 </CardHeader>
@@ -968,7 +1068,7 @@ export default function DocumentParserPage() {
                         transition={{ delay: index * 0.05, duration: 0.3 }}
                         className={`border-b border-slate-100 dark:border-slate-800 ${
                           loading && originalIndex === extractedData.length - 1 ? "bg-slate-100/50 dark:bg-slate-800/30" : ""
-                        } ${!isAdmin && originalIndex >= 10 ? "blur-sm opacity-40 pointer-events-none" : ""}`}
+                        }`}
                       >
                         <TableCell
                           className={`font-mono text-xs transition-all duration-300 ${
@@ -1041,118 +1141,12 @@ export default function DocumentParserPage() {
                   </TableBody>
                 </Table>
               </div>
-              
-              {/* Demo Limitation Overlay */}
-              {!isAdmin && extractedData.length > 10 && (
-                <motion.div
-                  initial={{ opacity: 0, y: -20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.5 }}
-                  className="absolute bottom-4 left-1/2 transform -translate-x-1/2 z-20"
-                >
-                  <div className="bg-slate-900 dark:bg-slate-800 text-white px-6 py-3 rounded-lg shadow-2xl border border-slate-700 backdrop-blur-sm">
-                    <div className="flex items-center gap-2">
-                      <span className="text-sm font-medium">
-                        🔒 Demo Mode: Showing {Math.min(extractedData.length, 15)} records (First 10 clear, {Math.max(0, Math.min(extractedData.length - 10, 5))} blurred)
-                      </span>
-                    </div>
-                  </div>
-                </motion.div>
-              )}
-              
-              {isAdmin && extractedData.length > 0 && (
-                <motion.div
-                  initial={{ opacity: 0, y: -20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.5 }}
-                  className="absolute bottom-4 left-1/2 transform -translate-x-1/2 z-20"
-                >
-                  <div className="bg-emerald-600 dark:bg-emerald-700 text-white px-6 py-3 rounded-lg shadow-2xl border border-emerald-500 backdrop-blur-sm">
-                    <div className="flex items-center gap-2">
-                      <Shield className="h-4 w-4" />
-                      <span className="text-sm font-medium">
-                        Admin Mode: Full access • All {extractedData.length} records visible
-                      </span>
-                    </div>
-                  </div>
-                </motion.div>
-              )}
             </CardContent>
           </Card>
         </motion.div>
           )}
         </AnimatePresence>
 
-        {/* Admin Login Modal */}
-        <AnimatePresence>
-          {showAdminLogin && (
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4"
-              onClick={() => setShowAdminLogin(false)}
-            >
-              <motion.div
-                initial={{ scale: 0.9, y: 20 }}
-                animate={{ scale: 1, y: 0 }}
-                exit={{ scale: 0.9, y: 20 }}
-                onClick={(e) => e.stopPropagation()}
-                className="bg-white dark:bg-slate-900 rounded-xl p-6 max-w-md w-full shadow-2xl border border-slate-200 dark:border-slate-700"
-              >
-                <div className="flex items-center gap-2 mb-4">
-                  <Shield className="h-6 w-6 text-slate-700 dark:text-slate-300" />
-                  <h2 className="text-xl font-bold text-slate-900 dark:text-slate-100">
-                    Admin Access
-                  </h2>
-                </div>
-                
-                <p className="text-sm text-slate-600 dark:text-slate-400 mb-4">
-                  Enter admin password to access full features
-                </p>
-                
-                <div className="space-y-4">
-                  <div>
-                    <label className="text-sm font-medium text-slate-700 dark:text-slate-300 block mb-2">
-                      Password
-                    </label>
-                    <input
-                      type="password"
-                      value={adminPassword}
-                      onChange={(e) => setAdminPassword(e.target.value)}
-                      onKeyPress={(e) => e.key === "Enter" && handleAdminLogin()}
-                      placeholder="Enter admin password"
-                      className="w-full px-4 py-2 border border-slate-300 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-900 focus:ring-2 focus:ring-slate-400 focus:outline-none"
-                      autoFocus
-                    />
-                  </div>
-                  
-                  <div className="flex gap-2">
-                    <Button
-                      onClick={handleAdminLogin}
-                      className="flex-1 bg-slate-800 hover:bg-slate-900"
-                    >
-                      Login
-                    </Button>
-                    <Button
-                      variant="outline"
-                      onClick={() => {
-                        setShowAdminLogin(false)
-                        setAdminPassword("")
-                      }}
-                    >
-                      Cancel
-                    </Button>
-                  </div>
-                  
-                  <p className="text-xs text-slate-500 dark:text-slate-400 text-center">
-                    Session expires after 5 minutes
-                  </p>
-                </div>
-              </motion.div>
-            </motion.div>
-          )}
-        </AnimatePresence>
 
         {/* Footer */}
         <motion.footer
