@@ -6,7 +6,7 @@ import { useState } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Upload, FileText, Loader2, Download, Sparkles, CheckCircle2 } from "lucide-react"
+import { Upload, FileText, Loader2, Download, Sparkles, CheckCircle2, Lock, LogOut, Shield } from "lucide-react"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 
 type ArchivalRecord = {
@@ -39,6 +39,13 @@ export default function DocumentParserPage() {
   const [loading, setLoading] = useState(false)
   const [extractedData, setExtractedData] = useState<ArchivalRecord[]>([])
   const [error, setError] = useState<string | null>(null)
+  const [processingTime, setProcessingTime] = useState<number | null>(null)
+  const [startTime, setStartTime] = useState<number | null>(null)
+  const [searchQuery, setSearchQuery] = useState("")
+  const [columnDensity, setColumnDensity] = useState<"comfortable" | "compact">("comfortable")
+  const [isAdmin, setIsAdmin] = useState(false)
+  const [showAdminLogin, setShowAdminLogin] = useState(false)
+  const [adminPassword, setAdminPassword] = useState("")
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFile = e.target.files?.[0]
@@ -181,12 +188,89 @@ export default function DocumentParserPage() {
     }
   }
 
+  // Fuzzy search function
+  const fuzzySearch = (records: ArchivalRecord[], query: string) => {
+    if (!query.trim()) return records
+    
+    const lowerQuery = query.toLowerCase()
+    return records.filter(record => {
+      const searchableText = Object.values(record).join(" ").toLowerCase()
+      return searchableText.includes(lowerQuery)
+    })
+  }
+
+  // Admin login functions
+  const handleAdminLogin = async () => {
+    try {
+      const response = await fetch("/api/admin/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username: "admin", password: adminPassword }),
+      })
+
+      const data = await response.json()
+
+      if (data.success) {
+        setIsAdmin(true)
+        setShowAdminLogin(false)
+        setAdminPassword("")
+        // Auto-logout after 5 minutes
+        setTimeout(() => setIsAdmin(false), 5 * 60 * 1000)
+      } else {
+        setError("Invalid admin password")
+        setTimeout(() => setError(null), 3000)
+      }
+    } catch (err) {
+      setError("Login failed")
+      setTimeout(() => setError(null), 3000)
+    }
+  }
+
+  const handleAdminLogout = async () => {
+    try {
+      await fetch("/api/admin/login", { method: "DELETE" })
+      setIsAdmin(false)
+    } catch (err) {
+      console.error("Logout failed", err)
+    }
+  }
+
+  // Load sample document
+  const loadSampleDocument = async (filename: string) => {
+    try {
+      setLoading(true)
+      setError(null)
+      setExtractedData([])
+      
+      const response = await fetch(`/${filename}`)
+      const blob = await response.blob()
+      const sampleFile = new File([blob], filename, { type: blob.type })
+      setFile(sampleFile)
+      
+      // Auto-trigger processing
+      setTimeout(() => {
+        const input = document.getElementById('file-upload') as HTMLInputElement
+        if (input) {
+          const dataTransfer = new DataTransfer()
+          dataTransfer.items.add(sampleFile)
+          input.files = dataTransfer.files
+          handleUpload()
+        }
+      }, 500)
+    } catch (err) {
+      setError("Failed to load sample document")
+      setLoading(false)
+    }
+  }
+
   const handleUpload = async () => {
     if (!file) return
 
     setLoading(true)
     setError(null)
     setExtractedData([]) // Clear previous results
+    setProcessingTime(null)
+    setStartTime(Date.now())
 
     try {
       // Convert file to base64
@@ -275,6 +359,9 @@ export default function DocumentParserPage() {
                     const limitedRecords = (message.records || []).slice(0, 15)
                     console.log(`[Client] Received complete data: ${limitedRecords.length} records (limited to 15)`)
                     setExtractedData(limitedRecords)
+                    if (startTime) {
+                      setProcessingTime(Date.now() - startTime)
+                    }
                     setLoading(false)
                   } else if (message.type === "error") {
                     throw new Error(message.error || "Streaming error")
@@ -416,14 +503,44 @@ export default function DocumentParserPage() {
             </span>
           </motion.div>
           
-          <motion.h1
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3, duration: 0.6 }}
-            className="text-5xl md:text-6xl font-bold mb-4 text-balance bg-clip-text text-transparent bg-gradient-to-r from-slate-900 via-gray-800 to-slate-900 dark:from-white dark:via-slate-200 dark:to-white"
-          >
-            Archival Document Parser
-          </motion.h1>
+          <div className="flex items-center justify-center gap-4 mb-4">
+            <motion.h1
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.3, duration: 0.6 }}
+              className="text-5xl md:text-6xl font-bold text-balance bg-clip-text text-transparent bg-gradient-to-r from-slate-900 via-gray-800 to-slate-900 dark:from-white dark:via-slate-200 dark:to-white"
+            >
+              Archival Document Parser
+            </motion.h1>
+            
+            {/* Admin Login Button */}
+            <motion.div
+              initial={{ opacity: 0, scale: 0 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ delay: 0.5, type: "spring" }}
+            >
+              {isAdmin ? (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={handleAdminLogout}
+                  className="gap-2 border-emerald-600 text-emerald-600 hover:bg-emerald-50 dark:border-emerald-400 dark:text-emerald-400"
+                >
+                  <Shield className="h-4 w-4" />
+                  <LogOut className="h-4 w-4" />
+                </Button>
+              ) : (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setShowAdminLogin(true)}
+                  className="gap-2"
+                >
+                  <Lock className="h-4 w-4" />
+                </Button>
+              )}
+            </motion.div>
+          </div>
           
           <motion.p
             initial={{ opacity: 0 }}
@@ -433,6 +550,83 @@ export default function DocumentParserPage() {
           >
             Upload documents and extract structured archival data in real-time with streaming AI
           </motion.p>
+        </motion.div>
+
+        {/* Sample Documents Section */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.6, duration: 0.6 }}
+        >
+          <Card className="mb-6 border-slate-300/50 dark:border-slate-700/50 shadow-lg bg-white/90 dark:bg-slate-900/90">
+            <CardHeader>
+              <CardTitle className="text-lg flex items-center gap-2">
+                <FileText className="h-5 w-5" />
+                Try a Sample Document
+              </CardTitle>
+              <CardDescription>Click to load and process an example archival document</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
+                  <Button 
+                    variant="outline" 
+                    className="w-full justify-start gap-2"
+                    onClick={() => loadSampleDocument("222. Sudbeni stol Varaždin - AP.docx")}
+                    disabled={loading}
+                  >
+                    <FileText className="h-4 w-4" />
+                    <div className="text-left">
+                      <div className="font-medium">Sudbeni stol Varaždin</div>
+                      <div className="text-xs text-slate-500">Archival Protocol</div>
+                    </div>
+                  </Button>
+                </motion.div>
+                <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
+                  <Button 
+                    variant="outline" 
+                    className="w-full justify-start gap-2"
+                    onClick={() => loadSampleDocument("228.KRALJEVSKI KOTARSKI SUD VARAŽDIN.doc")}
+                    disabled={loading}
+                  >
+                    <FileText className="h-4 w-4" />
+                    <div className="text-left">
+                      <div className="font-medium">Kraljevski Kotarski Sud</div>
+                      <div className="text-xs text-slate-500">Royal District Court</div>
+                    </div>
+                  </Button>
+                </motion.div>
+                <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
+                  <Button 
+                    variant="outline" 
+                    className="w-full justify-start gap-2"
+                    onClick={() => loadSampleDocument("69. NOO Jalžabet SI.docx")}
+                    disabled={loading}
+                  >
+                    <FileText className="h-4 w-4" />
+                    <div className="text-left">
+                      <div className="font-medium">NOO Jalžabet</div>
+                      <div className="text-xs text-slate-500">National Liberation Committee</div>
+                    </div>
+                  </Button>
+                </motion.div>
+                <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
+                  <Button 
+                    variant="outline" 
+                    className="w-full justify-start gap-2"
+                    onClick={() => loadSampleDocument("48 -OBITELJ KAVANAGH(1809. – 1940.)-SI.docx")}
+                    disabled={loading}
+                  >
+                    <FileText className="h-4 w-4" />
+                    <div className="text-left">
+                      <div className="font-medium">Obitelj Kavanagh</div>
+                      <div className="text-xs text-slate-500">Family Archive 1809-1940</div>
+                    </div>
+                  </Button>
+                </motion.div>
+              </div>
+            </CardContent>
+          </Card>
         </motion.div>
 
         <motion.div
@@ -612,14 +806,106 @@ export default function DocumentParserPage() {
                       animate={{ opacity: 1, scale: 1 }}
                       transition={{ delay: 0.3 }}
                     >
-                      <div className="px-4 py-2 bg-slate-100 dark:bg-slate-800/50 rounded-lg border border-slate-300 dark:border-slate-700">
-                        <span className="text-xs font-medium text-slate-600 dark:text-slate-400">
-                          🔒 Protected Demo
-                        </span>
-                      </div>
+                      {isAdmin ? (
+                        <Button
+                          onClick={exportToCSV}
+                          variant="outline"
+                          size="sm"
+                          disabled={loading}
+                          className="gap-2 border-emerald-600 text-emerald-600 hover:bg-emerald-50 dark:border-emerald-400 dark:text-emerald-400"
+                        >
+                          <Download className="h-4 w-4" />
+                          Export CSV
+                        </Button>
+                      ) : (
+                        <div className="px-4 py-2 bg-slate-100 dark:bg-slate-800/50 rounded-lg border border-slate-300 dark:border-slate-700">
+                          <span className="text-xs font-medium text-slate-600 dark:text-slate-400">
+                            🔒 Protected Demo
+                          </span>
+                        </div>
+                      )}
                     </motion.div>
                   </div>
                 </CardHeader>
+            
+            {/* Document Info Card */}
+            <div className="px-6 pb-4">
+              <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
+                <div className="bg-slate-50 dark:bg-slate-800/50 rounded-lg p-3">
+                  <div className="text-xs text-slate-500 dark:text-slate-400">Document</div>
+                  <div className="text-sm font-medium text-slate-700 dark:text-slate-300 truncate" title={file?.name}>
+                    {file?.name || "—"}
+                  </div>
+                </div>
+                <div className="bg-slate-50 dark:bg-slate-800/50 rounded-lg p-3">
+                  <div className="text-xs text-slate-500 dark:text-slate-400">Size</div>
+                  <div className="text-sm font-medium text-slate-700 dark:text-slate-300">
+                    {file ? `${(file.size / 1024).toFixed(1)} KB` : "—"}
+                  </div>
+                </div>
+                <div className="bg-slate-50 dark:bg-slate-800/50 rounded-lg p-3">
+                  <div className="text-xs text-slate-500 dark:text-slate-400">Processed</div>
+                  <div className="text-sm font-medium text-slate-700 dark:text-slate-300">
+                    {processingTime ? `${(processingTime / 1000).toFixed(1)}s` : loading ? "..." : "—"}
+                  </div>
+                </div>
+                <div className="bg-slate-50 dark:bg-slate-800/50 rounded-lg p-3">
+                  <div className="text-xs text-slate-500 dark:text-slate-400">Model</div>
+                  <div className="text-sm font-medium text-slate-700 dark:text-slate-300">
+                    GPT-5-Mini
+                  </div>
+                </div>
+                <div className="bg-slate-50 dark:bg-slate-800/50 rounded-lg p-3">
+                  <div className="text-xs text-slate-500 dark:text-slate-400">Fields Complete</div>
+                  <div className="text-sm font-medium text-slate-700 dark:text-slate-300">
+                    {extractedData.length > 0 
+                      ? `${Math.round((extractedData.filter(r => r.identifikator).length / extractedData.length) * 100)}%`
+                      : "—"}
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Search Bar & Controls */}
+            <div className="px-6 pb-4">
+              <div className="flex gap-2">
+                <div className="flex-1 relative">
+                  <input
+                    type="text"
+                    placeholder="Search records by ID, title, content..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="w-full px-4 py-2 text-sm border border-slate-300 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-900 focus:ring-2 focus:ring-slate-400 focus:outline-none"
+                  />
+                  {searchQuery && (
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="absolute right-2 top-1/2 -translate-y-1/2 h-7"
+                      onClick={() => setSearchQuery("")}
+                    >
+                      Clear
+                    </Button>
+                  )}
+                </div>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setColumnDensity(columnDensity === "comfortable" ? "compact" : "comfortable")}
+                  className="gap-2"
+                >
+                  <span className="text-xs">
+                    {columnDensity === "comfortable" ? "Compact" : "Comfortable"}
+                  </span>
+                </Button>
+              </div>
+              {searchQuery && (
+                <div className="mt-2 text-xs text-slate-500 dark:text-slate-400">
+                  Found {fuzzySearch(extractedData, searchQuery).length} of {extractedData.length} records
+                </div>
+              )}
+            </div>
+
             <CardContent className="relative">
               {/* Watermark */}
               <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-0 opacity-5 dark:opacity-10">
@@ -672,18 +958,22 @@ export default function DocumentParserPage() {
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {extractedData.map((record, index) => (
+                    {fuzzySearch(extractedData, searchQuery).map((record, index) => {
+                      const originalIndex = extractedData.indexOf(record)
+                      return (
                       <motion.tr
                         key={index}
                         initial={{ opacity: 0, x: -20 }}
                         animate={{ opacity: 1, x: 0 }}
                         transition={{ delay: index * 0.05, duration: 0.3 }}
                         className={`border-b border-slate-100 dark:border-slate-800 ${
-                          loading && index === extractedData.length - 1 ? "bg-slate-100/50 dark:bg-slate-800/30" : ""
-                        } ${index >= 10 ? "blur-sm opacity-40 pointer-events-none" : ""}`}
+                          loading && originalIndex === extractedData.length - 1 ? "bg-slate-100/50 dark:bg-slate-800/30" : ""
+                        } ${!isAdmin && originalIndex >= 10 ? "blur-sm opacity-40 pointer-events-none" : ""}`}
                       >
                         <TableCell
                           className={`font-mono text-xs transition-all duration-300 ${
+                            columnDensity === "compact" ? "py-2" : "py-3"
+                          } ${
                             record.identifikator
                               ? "bg-gradient-to-r from-emerald-50 to-transparent dark:from-emerald-950/30 dark:to-transparent"
                               : "bg-slate-50/50 dark:bg-slate-900/50"
@@ -694,7 +984,7 @@ export default function DocumentParserPage() {
                             animate={{ opacity: 1 }}
                             transition={{ duration: 0.3 }}
                           >
-                            {record.identifikator || (loading && index === extractedData.length - 1 ? "..." : "")}
+                            {record.identifikator || (loading && originalIndex === extractedData.length - 1 ? "..." : "")}
                           </motion.span>
                         </TableCell>
                         {[
@@ -723,6 +1013,8 @@ export default function DocumentParserPage() {
                           <TableCell
                             key={cell.key}
                             className={`${cell.className} transition-all duration-300 ${
+                              columnDensity === "compact" ? "py-2" : "py-3"
+                            } ${
                               cell.value
                                 ? "bg-gradient-to-r from-emerald-50 to-transparent dark:from-emerald-950/30 dark:to-transparent"
                                 : "bg-slate-50/50 dark:bg-slate-900/50"
@@ -733,7 +1025,7 @@ export default function DocumentParserPage() {
                               animate={{ opacity: 1, y: 0 }}
                               transition={{ delay: cellIndex * 0.02, duration: 0.2 }}
                             >
-                              {cell.value || (loading && index === extractedData.length - 1 ? (
+                              {cell.value || (loading && originalIndex === extractedData.length - 1 ? (
                                 <motion.span
                                   animate={{ opacity: [0.3, 1, 0.3] }}
                                   transition={{ duration: 1.5, repeat: Infinity }}
@@ -745,13 +1037,13 @@ export default function DocumentParserPage() {
                           </TableCell>
                         ))}
                       </motion.tr>
-                    ))}
+                    )})}
                   </TableBody>
                 </Table>
               </div>
               
               {/* Demo Limitation Overlay */}
-              {extractedData.length > 10 && (
+              {!isAdmin && extractedData.length > 10 && (
                 <motion.div
                   initial={{ opacity: 0, y: -20 }}
                   animate={{ opacity: 1, y: 0 }}
@@ -767,11 +1059,126 @@ export default function DocumentParserPage() {
                   </div>
                 </motion.div>
               )}
+              
+              {isAdmin && extractedData.length > 0 && (
+                <motion.div
+                  initial={{ opacity: 0, y: -20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.5 }}
+                  className="absolute bottom-4 left-1/2 transform -translate-x-1/2 z-20"
+                >
+                  <div className="bg-emerald-600 dark:bg-emerald-700 text-white px-6 py-3 rounded-lg shadow-2xl border border-emerald-500 backdrop-blur-sm">
+                    <div className="flex items-center gap-2">
+                      <Shield className="h-4 w-4" />
+                      <span className="text-sm font-medium">
+                        Admin Mode: Full access • All {extractedData.length} records visible
+                      </span>
+                    </div>
+                  </div>
+                </motion.div>
+              )}
             </CardContent>
           </Card>
         </motion.div>
           )}
         </AnimatePresence>
+
+        {/* Admin Login Modal */}
+        <AnimatePresence>
+          {showAdminLogin && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+              onClick={() => setShowAdminLogin(false)}
+            >
+              <motion.div
+                initial={{ scale: 0.9, y: 20 }}
+                animate={{ scale: 1, y: 0 }}
+                exit={{ scale: 0.9, y: 20 }}
+                onClick={(e) => e.stopPropagation()}
+                className="bg-white dark:bg-slate-900 rounded-xl p-6 max-w-md w-full shadow-2xl border border-slate-200 dark:border-slate-700"
+              >
+                <div className="flex items-center gap-2 mb-4">
+                  <Shield className="h-6 w-6 text-slate-700 dark:text-slate-300" />
+                  <h2 className="text-xl font-bold text-slate-900 dark:text-slate-100">
+                    Admin Access
+                  </h2>
+                </div>
+                
+                <p className="text-sm text-slate-600 dark:text-slate-400 mb-4">
+                  Enter admin password to access full features
+                </p>
+                
+                <div className="space-y-4">
+                  <div>
+                    <label className="text-sm font-medium text-slate-700 dark:text-slate-300 block mb-2">
+                      Password
+                    </label>
+                    <input
+                      type="password"
+                      value={adminPassword}
+                      onChange={(e) => setAdminPassword(e.target.value)}
+                      onKeyPress={(e) => e.key === "Enter" && handleAdminLogin()}
+                      placeholder="Enter admin password"
+                      className="w-full px-4 py-2 border border-slate-300 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-900 focus:ring-2 focus:ring-slate-400 focus:outline-none"
+                      autoFocus
+                    />
+                  </div>
+                  
+                  <div className="flex gap-2">
+                    <Button
+                      onClick={handleAdminLogin}
+                      className="flex-1 bg-slate-800 hover:bg-slate-900"
+                    >
+                      Login
+                    </Button>
+                    <Button
+                      variant="outline"
+                      onClick={() => {
+                        setShowAdminLogin(false)
+                        setAdminPassword("")
+                      }}
+                    >
+                      Cancel
+                    </Button>
+                  </div>
+                  
+                  <p className="text-xs text-slate-500 dark:text-slate-400 text-center">
+                    Session expires after 5 minutes
+                  </p>
+                </div>
+              </motion.div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        {/* Footer */}
+        <motion.footer
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 1, duration: 0.6 }}
+          className="mt-16 pb-8 text-center"
+        >
+          <div className="text-sm text-slate-600 dark:text-slate-400">
+            <p className="flex items-center justify-center gap-2">
+              <span>Demo built by</span>
+              <a 
+                href="https://mindxglobal.com" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="font-semibold hover:text-slate-900 dark:hover:text-slate-200 transition-colors"
+              >
+                MindX Global
+              </a>
+              <span>🖤</span>
+            </p>
+            <p className="mt-2 text-xs">
+              Powered by GPT-5-Mini • Real-time streaming extraction • Demo version
+            </p>
+          </div>
+        </motion.footer>
       </div>
     </div>
   )
