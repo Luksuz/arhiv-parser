@@ -4,6 +4,7 @@ import type React from "react"
 
 import { useState } from "react"
 import { motion, AnimatePresence } from "framer-motion"
+import Image from "next/image"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Upload, FileText, Loader2, Download, Sparkles, CheckCircle2, Lock, LogOut, Shield } from "lucide-react"
@@ -504,18 +505,35 @@ export default function DocumentParserPage() {
                 transition={{ delay: 0.3, type: "spring", stiffness: 200 }}
                 className="flex justify-center"
               >
-                <div className="w-16 h-16 rounded-full bg-gradient-to-br from-slate-700 to-gray-900 dark:from-slate-200 dark:to-gray-100 flex items-center justify-center">
-                  <Shield className="h-8 w-8 text-white dark:text-slate-900" />
-                </div>
+                <Image 
+                  src="/data-transformation.png" 
+                  alt="Arhiv Parser" 
+                  width={80}
+                  height={80}
+                  className="w-20 h-20"
+                  priority
+                />
               </motion.div>
               <div>
                 <CardTitle className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-slate-900 via-gray-800 to-slate-900 dark:from-white dark:via-slate-200 dark:to-white">
-                  Archival Document Parser
+                  Arhiv Parser
                 </CardTitle>
                 <CardDescription className="mt-2 text-base">
-                  Enter your password to access the application
+                  AI-powered archival document extraction
                 </CardDescription>
               </div>
+              
+              {/* App Description */}
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.5 }}
+                className="bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-lg p-4 text-left"
+              >
+                <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
+                  Transform unstructured archival documents into organized, structured data. Our AI analyzes and extracts Croatian archival records following standard schemas, making historical data searchable and exportable.
+                </p>
+              </motion.div>
             </CardHeader>
             <CardContent className="space-y-4">
               <div>
@@ -614,10 +632,27 @@ export default function DocumentParserPage() {
           transition={{ duration: 0.6 }}
           className="mb-12 text-center"
         >
+          {/* App Icon and Title */}
+          <motion.div
+            initial={{ scale: 0, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
+            className="mb-6 flex justify-center"
+          >
+            <Image 
+              src="/data-transformation.png" 
+              alt="Arhiv Parser" 
+              width={112}
+              height={112}
+              className="w-24 h-24 md:w-28 md:h-28"
+              priority
+            />
+          </motion.div>
+          
           <motion.div
             initial={{ scale: 0 }}
             animate={{ scale: 1 }}
-            transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
+            transition={{ delay: 0.25, type: "spring", stiffness: 200 }}
             className="inline-flex items-center gap-2 mb-4 px-4 py-2 bg-slate-200 dark:bg-slate-800/50 rounded-full border border-slate-300 dark:border-slate-700"
           >
             <Sparkles className="h-4 w-4 text-slate-700 dark:text-slate-300" />
@@ -630,10 +665,10 @@ export default function DocumentParserPage() {
             <motion.h1
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.3, duration: 0.6 }}
+              transition={{ delay: 0.35, duration: 0.6 }}
               className="text-5xl md:text-6xl font-bold text-balance bg-clip-text text-transparent bg-gradient-to-r from-slate-900 via-gray-800 to-slate-900 dark:from-white dark:via-slate-200 dark:to-white"
             >
-              Archival Document Parser
+              Arhiv Parser
             </motion.h1>
             
             {/* Logout Button */}
@@ -658,10 +693,35 @@ export default function DocumentParserPage() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.5, duration: 0.6 }}
-            className="text-lg md:text-xl text-slate-600 dark:text-slate-400 text-pretty max-w-2xl mx-auto"
+            className="text-lg md:text-xl text-slate-600 dark:text-slate-400 text-pretty max-w-2xl mx-auto mb-6"
           >
-            Upload documents and extract structured archival data in real-time with streaming AI
+            Transform archival documents into structured, searchable data with AI-powered extraction
           </motion.p>
+          
+          {/* Feature Highlights */}
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.6, duration: 0.6 }}
+            className="flex flex-wrap items-center justify-center gap-4 text-sm text-slate-600 dark:text-slate-400"
+          >
+            <div className="flex items-center gap-2">
+              <div className="w-2 h-2 rounded-full bg-emerald-500" />
+              <span>Real-time Streaming</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="w-2 h-2 rounded-full bg-blue-500" />
+              <span>Croatian Standards</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="w-2 h-2 rounded-full bg-purple-500" />
+              <span>CSV Export</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="w-2 h-2 rounded-full bg-amber-500" />
+              <span>Multi-format Support</span>
+            </div>
+          </motion.div>
         </motion.div>
 
         {/* Sample Documents Section */}
