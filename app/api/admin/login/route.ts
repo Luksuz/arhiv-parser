@@ -3,7 +3,7 @@ import { cookies } from "next/headers"
 
 // Hardcoded admin credentials
 const ADMIN_USERNAME = "admin"
-const ADMIN_PASSWORD = "MindXGlobal2024!"
+const ADMIN_PASSWORD = "MindXGlobal2025!"
 
 // Session storage (in production, use Redis or a database)
 const sessions = new Map<string, { expiresAt: number }>()

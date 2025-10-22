@@ -241,34 +241,29 @@ export default function DocumentParserPage() {
   // Load sample document
   const loadSampleDocument = async (filename: string) => {
     try {
-      setLoading(true)
       setError(null)
       setExtractedData([])
       
       const response = await fetch(`/${filename}`)
+      if (!response.ok) {
+        throw new Error("Failed to fetch sample document")
+      }
+      
       const blob = await response.blob()
-      const sampleFile = new File([blob], filename, { type: blob.type })
+      const sampleFile = new File([blob], filename, { 
+        type: "application/vnd.openxmlformats-officedocument.wordprocessingml.document" 
+      })
       setFile(sampleFile)
       
-      // Auto-trigger processing
-      setTimeout(() => {
-        const input = document.getElementById('file-upload') as HTMLInputElement
-        if (input) {
-          const dataTransfer = new DataTransfer()
-          dataTransfer.items.add(sampleFile)
-          input.files = dataTransfer.files
-          handleUpload()
-        }
-      }, 500)
+      // Directly process the file
+      processFile(sampleFile)
     } catch (err) {
-      setError("Failed to load sample document")
+      setError(`Failed to load sample document: ${err instanceof Error ? err.message : "Unknown error"}`)
       setLoading(false)
     }
   }
 
-  const handleUpload = async () => {
-    if (!file) return
-
+  const processFile = async (fileToProcess: File) => {
     setLoading(true)
     setError(null)
     setExtractedData([]) // Clear previous results
@@ -278,7 +273,7 @@ export default function DocumentParserPage() {
     try {
       // Convert file to base64
       const reader = new FileReader()
-      reader.readAsDataURL(file)
+      reader.readAsDataURL(fileToProcess)
 
       reader.onload = async () => {
         try {
@@ -293,8 +288,8 @@ export default function DocumentParserPage() {
             body: JSON.stringify({
               file: {
                 data: base64Data,
-                mediaType: file.type || "application/octet-stream",
-                filename: file.name,
+                mediaType: fileToProcess.type || "application/octet-stream",
+                filename: fileToProcess.name,
               },
             }),
           })
@@ -363,7 +358,7 @@ export default function DocumentParserPage() {
                     console.log(`[Client] Received complete data: ${limitedRecords.length} records (limited to 15)`)
                     setExtractedData(limitedRecords)
                     if (startTime) {
-                      setProcessingTime(Date.now() - startTime)
+                      setProcessingTime((Date.now() - startTime) / 1000)
                     }
                     setLoading(false)
                   } else if (message.type === "error") {
@@ -393,6 +388,11 @@ export default function DocumentParserPage() {
       setError(err instanceof Error ? err.message : "An error occurred")
       setLoading(false)
     }
+  }
+
+  const handleUpload = async () => {
+    if (!file) return
+    processFile(file)
   }
 
   const exportToCSV = () => {
