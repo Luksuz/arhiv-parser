@@ -3,7 +3,14 @@ import { NextRequest } from "next/server"
 
 export const maxDuration = 60
 
-const client = new OpenAI({ apiKey: process.env.OPENAI_API_KEY })
+const client = new OpenAI({
+  baseURL: "https://openrouter.ai/api/v1",
+  apiKey: process.env.OPENROUTER_API_KEY,
+  defaultHeaders: {
+    "HTTP-Referer": process.env.SITE_URL || "https://localhost:3000",
+    "X-Title": "Arhiv Parser",
+  },
+})
 
 const archivalRecordJsonSchema = {
   name: "archival_record_schema",
@@ -104,7 +111,7 @@ export async function POST(req: Request) {
 
     const userPrompt = `Extract archival records from this document. Follow the Croatian archival standard and fill every field in the schema if possible. Use empty strings where information is missing.
 
-IMPORTANT: Extract MAXIMUM 15 records only. If the document contains more than 15 records, extract only the first 15 and stop.
+Extract ALL records found in the document. Do not limit the number of records - extract everything.
 
 Document content:
 ${text}`
@@ -147,7 +154,7 @@ You must respond with ONLY a valid JSON object, no other text. Follow this exact
 Use empty strings for missing fields. Return ONLY the JSON, nothing else.`
 
     const stream = await client.chat.completions.create({
-      model: "gpt-5-mini",
+      model: "google/gemini-2.5-flash-lite",
       messages: [
         { role: "system", content: systemPromptWithSchema },
         { role: "user", content: userPrompt },

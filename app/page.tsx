@@ -339,25 +339,17 @@ export default function DocumentParserPage() {
                     // Parse partial JSON and update records EVERY message for ultra-live effect
                     const records = parsePartialJSON(message.content)
                     if (records.length > 0) {
-                      // Limit to 15 records for demo
-                      const limitedRecords = records.slice(0, 15)
-                      setExtractedData(limitedRecords as ArchivalRecord[])
+                      setExtractedData(records as ArchivalRecord[])
                       
                       // Log less frequently to avoid console spam
                       if (messageCount % 20 === 0) {
-                        console.log(`[Client] Update ${messageCount}: ${limitedRecords.length} records, ${message.content.length} chars`)
-                      }
-                      
-                      // If we have 15 records, we can consider stopping early
-                      if (limitedRecords.length >= 15) {
-                        console.log(`[Client] Reached 15 records limit`)
+                        console.log(`[Client] Update ${messageCount}: ${records.length} records, ${message.content.length} chars`)
                       }
                     }
                   } else if (message.type === "complete") {
-                    // Final complete data - limit to 15 records
-                    const limitedRecords = (message.records || []).slice(0, 15)
-                    console.log(`[Client] Received complete data: ${limitedRecords.length} records (limited to 15)`)
-                    setExtractedData(limitedRecords)
+                    // Final complete data
+                    console.log(`[Client] Received complete data: ${message.records?.length || 0} records`)
+                    setExtractedData(message.records || [])
                     if (startTime) {
                       setProcessingTime((Date.now() - startTime) / 1000)
                     }
@@ -986,7 +978,7 @@ export default function DocumentParserPage() {
                         >
                           {extractedData.length}
                         </motion.span>{" "}
-                        / 15 record{extractedData.length !== 1 ? "s" : ""} extracted
+                        record{extractedData.length !== 1 ? "s" : ""} extracted
                         {loading && " (updating in real-time...)"}
                       </CardDescription>
                     </div>
@@ -1029,7 +1021,7 @@ export default function DocumentParserPage() {
                 <div className="bg-slate-50 dark:bg-slate-800/50 rounded-lg p-3">
                   <div className="text-xs text-slate-500 dark:text-slate-400">Model</div>
                   <div className="text-sm font-medium text-slate-700 dark:text-slate-300">
-                    GPT-5-Mini
+                    GPT-4o Mini
                   </div>
                 </div>
                 <div className="bg-slate-50 dark:bg-slate-800/50 rounded-lg p-3">
@@ -1246,7 +1238,7 @@ export default function DocumentParserPage() {
               <span>🖤</span>
             </p>
             <p className="mt-2 text-xs">
-              Powered by GPT-5-Mini • Real-time streaming extraction • Demo version
+              Powered by GPT-4o Mini via OpenRouter • Real-time streaming extraction • Demo version
             </p>
           </div>
         </motion.footer>
