@@ -11,8 +11,8 @@ const _geistMono = V0_Font_Geist_Mono({ subsets: ['latin'], weight: ["100","200"
 const _sourceSerif_4 = V0_Font_Source_Serif_4({ subsets: ['latin'], weight: ["200","300","400","500","600","700","800","900"] })
 
 export const metadata: Metadata = {
-  title: 'Arhiv Parser - AI-Powered Document Extraction',
-  description: 'Transform archival documents into structured data with AI-powered extraction. Extract, parse, and export Croatian archival records instantly.',
+  title: 'Državni Arhiv u Varaždinu - AI Obrada Inventara',
+  description: 'Digitalna obrada arhivskih inventara pomoću umjetne inteligencije. Automatsko ekstrahiranje arhivskih zapisa prema hrvatskom arhivskom standardu.',
   icons: {
     icon: '/data-transformation.png',
     apple: '/data-transformation.png',
@@ -25,7 +25,7 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="en">
+    <html lang="hr">
       <body className={`font-sans antialiased`}>
         {children}
         <Analytics />

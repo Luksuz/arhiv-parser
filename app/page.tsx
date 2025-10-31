@@ -453,11 +453,11 @@ export default function DocumentParserPage() {
   // Show login screen if not authenticated
   if (!isAuthenticated) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-gray-50 to-slate-100 dark:from-black dark:via-slate-950 dark:to-slate-900 relative overflow-hidden flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-amber-50 via-orange-50 to-rose-50 dark:from-slate-900 dark:via-amber-950 dark:to-orange-950 relative overflow-hidden flex items-center justify-center">
         {/* Animated background elements */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
           <motion.div
-            className="absolute -top-40 -right-40 w-80 h-80 bg-slate-300/5 dark:bg-slate-700/5 rounded-full blur-3xl"
+            className="absolute -top-40 -right-40 w-80 h-80 bg-amber-200/20 dark:bg-amber-700/10 rounded-full blur-3xl"
             animate={{
               scale: [1, 1.2, 1],
               rotate: [0, 90, 0],
@@ -469,7 +469,7 @@ export default function DocumentParserPage() {
             }}
           />
           <motion.div
-            className="absolute -bottom-40 -left-40 w-80 h-80 bg-gray-300/5 dark:bg-gray-700/5 rounded-full blur-3xl"
+            className="absolute -bottom-40 -left-40 w-80 h-80 bg-orange-200/20 dark:bg-orange-700/10 rounded-full blur-3xl"
             animate={{
               scale: [1.2, 1, 1.2],
               rotate: [0, -90, 0],
@@ -480,6 +480,87 @@ export default function DocumentParserPage() {
               ease: "linear",
             }}
           />
+          
+          {/* Floating Icons */}
+          <motion.div
+            className="absolute top-[10%] left-[5%] w-44 h-44 opacity-50 dark:opacity-30"
+            animate={{
+              y: [0, -30, 0],
+              rotate: [0, 10, -10, 0],
+            }}
+            transition={{
+              duration: 12,
+              repeat: Infinity,
+              ease: "easeInOut",
+            }}
+          >
+            <Image src="/icons/konverzija.png" alt="" width={176} height={176} className="w-full h-full object-contain" />
+          </motion.div>
+          
+          <motion.div
+            className="absolute top-[20%] right-[8%] w-56 h-56 opacity-50 dark:opacity-30"
+            animate={{
+              y: [0, 40, 0],
+              rotate: [0, -15, 15, 0],
+            }}
+            transition={{
+              duration: 15,
+              repeat: Infinity,
+              ease: "easeInOut",
+              delay: 1,
+            }}
+          >
+            <Image src="/icons/tablica.png" alt="" width={224} height={224} className="w-full h-full object-contain" />
+          </motion.div>
+          
+          <motion.div
+            className="absolute bottom-[15%] left-[12%] w-64 h-64 opacity-50 dark:opacity-30"
+            animate={{
+              y: [0, -35, 0],
+              x: [0, 20, 0],
+              rotate: [0, 20, 0],
+            }}
+            transition={{
+              duration: 18,
+              repeat: Infinity,
+              ease: "easeInOut",
+              delay: 2,
+            }}
+          >
+            <Image src="/icons/spis.png" alt="" width={256} height={256} className="w-full h-full object-contain" />
+          </motion.div>
+          
+          <motion.div
+            className="absolute top-[60%] right-[15%] w-44 h-44 opacity-50 dark:opacity-30"
+            animate={{
+              y: [0, 25, 0],
+              x: [0, -15, 0],
+            }}
+            transition={{
+              duration: 14,
+              repeat: Infinity,
+              ease: "easeInOut",
+              delay: 3,
+            }}
+          >
+            <Image src="/icons/konverzija.png" alt="" width={176} height={176} className="w-full h-full object-contain" />
+          </motion.div>
+          
+          <motion.div
+            className="absolute bottom-[25%] right-[5%] w-52 h-52 opacity-50 dark:opacity-30"
+            animate={{
+              y: [0, -40, 0],
+              rotate: [0, -10, 10, 0],
+            }}
+            transition={{
+              duration: 16,
+              repeat: Infinity,
+              ease: "easeInOut",
+              delay: 4,
+            }}
+          >
+            <Image src="/icons/tablica.png" alt="" width={208} height={208} className="w-full h-full object-contain" />
+          </motion.div>
         </div>
 
         {/* Login Card */}
@@ -489,7 +570,7 @@ export default function DocumentParserPage() {
           transition={{ duration: 0.6 }}
           className="relative z-10 w-full max-w-md mx-4"
         >
-          <Card className="border-slate-300/50 dark:border-slate-700/50 shadow-2xl backdrop-blur-sm bg-white/90 dark:bg-slate-900/90">
+          <Card className="border-amber-200/50 dark:border-amber-800/50 shadow-2xl backdrop-blur-sm bg-white/95 dark:bg-slate-900/95">
             <CardHeader className="text-center space-y-4">
               <motion.div
                 initial={{ scale: 0 }}
@@ -499,19 +580,19 @@ export default function DocumentParserPage() {
               >
                 <Image 
                   src="/data-transformation.png" 
-                  alt="Arhiv Parser" 
-                  width={80}
-                  height={80}
-                  className="w-20 h-20"
+                  alt="Državni Arhiv u Varaždinu" 
+                  width={150}
+                  height={150}
+                  className="w-60 h-60"
                   priority
                 />
               </motion.div>
               <div>
-                <CardTitle className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-slate-900 via-gray-800 to-slate-900 dark:from-white dark:via-slate-200 dark:to-white">
-                  Arhiv Parser
+                <CardTitle                 className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-amber-900 via-orange-800 to-rose-900 dark:from-amber-100 dark:via-orange-200 dark:to-rose-100">
+                  Državni Arhiv u Varaždinu
                 </CardTitle>
                 <CardDescription className="mt-2 text-base">
-                  AI-powered archival document extraction
+                  AI obrada arhivskih inventara
                 </CardDescription>
               </div>
               
@@ -520,33 +601,33 @@ export default function DocumentParserPage() {
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.5 }}
-                className="bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-lg p-4 text-left space-y-3"
+                className="bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-lg p-4 text-left space-y-3"
               >
-                <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
-                  Transform unstructured archival documents into organized, structured data. Our AI analyzes and extracts Croatian archival records following standard schemas, making historical data searchable and exportable.
+                <p className="text-sm text-amber-900/80 dark:text-amber-200/90 leading-relaxed">
+                  Digitalna obrada arhivskih inventara pomoću umjetne inteligencije. Alat automatski ekstrahira arhivske zapise prema hrvatskom arhivskom standardu, omogućavajući pretraživanje i izvoz podataka.
                 </p>
-                <div className="flex items-start gap-2 pt-2 border-t border-slate-200 dark:border-slate-700">
+                <div className="flex items-start gap-2 pt-2 border-t border-amber-200 dark:border-amber-800">
                   <div className="flex-shrink-0 mt-0.5">
-                    <div className="w-1.5 h-1.5 rounded-full bg-amber-500" />
+                    <div className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
                   </div>
-                  <p className="text-xs text-slate-500 dark:text-slate-500 leading-relaxed">
-                    <strong className="text-slate-600 dark:text-slate-400">Demo Version:</strong> Extraction limited to 15 records per document. CSV export is disabled in demo mode.
+                  <p className="text-xs text-amber-800/80 dark:text-amber-300/80 leading-relaxed">
+                    <strong className="text-amber-900 dark:text-amber-200">Napomena:</strong> Alat ekstrahira sve zapise iz dokumenta. CSV export dostupan nakon obrade.
                   </p>
                 </div>
               </motion.div>
             </CardHeader>
             <CardContent className="space-y-4">
               <div>
-                <label className="text-sm font-medium text-slate-700 dark:text-slate-300 block mb-2">
-                  Password
+                <label className="text-sm font-medium text-amber-900 dark:text-amber-200 block mb-2">
+                  Lozinka
                 </label>
                 <input
                   type="password"
                   value={loginPassword}
                   onChange={(e) => setLoginPassword(e.target.value)}
                   onKeyPress={(e) => e.key === "Enter" && handleLogin()}
-                  placeholder="Enter password"
-                  className="w-full px-4 py-3 border border-slate-300 dark:border-slate-700 rounded-lg bg-white dark:bg-slate-900 focus:ring-2 focus:ring-slate-400 focus:outline-none text-base"
+                  placeholder="Unesite lozinku"
+                  className="w-full px-4 py-3 border border-amber-300 dark:border-amber-700 rounded-lg bg-white dark:bg-slate-900 focus:ring-2 focus:ring-amber-400 focus:outline-none text-base"
                   autoFocus
                 />
               </div>
@@ -563,29 +644,20 @@ export default function DocumentParserPage() {
 
               <Button
                 onClick={handleLogin}
-                className="w-full bg-gradient-to-r from-slate-800 to-gray-900 hover:from-slate-900 hover:to-black text-white shadow-lg text-base py-6"
+                className="w-full bg-gradient-to-r from-amber-700 to-orange-800 hover:from-amber-800 hover:to-orange-900 text-white shadow-lg text-base py-6"
                 size="lg"
               >
                 <Lock className="mr-2 h-5 w-5" />
-                Login
+                Prijava
               </Button>
 
-              <p className="text-xs text-slate-500 dark:text-slate-400 text-center">
-                Session expires after 1 hour of login
+              <p className="text-xs text-amber-800/70 dark:text-amber-300/70 text-center">
+                Sesija istječe nakon 1 sat od prijave
               </p>
 
-              <div className="pt-4 border-t border-slate-200 dark:border-slate-700">
-                <p className="text-xs text-center text-slate-600 dark:text-slate-400">
-                  Demo built by{" "}
-                  <a
-                    href="https://mindxglobal.com"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="font-semibold hover:text-slate-900 dark:hover:text-slate-200 transition-colors"
-                  >
-                    MindX Global
-                  </a>{" "}
-                  🖤
+              <div className="pt-4 border-t border-amber-200 dark:border-amber-800">
+                <p className="text-xs text-center text-amber-900/80 dark:text-amber-200/80">
+                  © Državni Arhiv u Varaždinu 2025
                 </p>
               </div>
             </CardContent>
@@ -596,11 +668,11 @@ export default function DocumentParserPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-gray-50 to-slate-100 dark:from-black dark:via-slate-950 dark:to-slate-900 relative overflow-hidden">
+    <div className="min-h-screen bg-gradient-to-br from-amber-50 via-orange-50 to-rose-50 dark:from-slate-900 dark:via-amber-950 dark:to-orange-950 relative overflow-hidden">
       {/* Animated background elements */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <motion.div
-          className="absolute -top-40 -right-40 w-80 h-80 bg-slate-300/5 dark:bg-slate-700/5 rounded-full blur-3xl"
+          className="absolute -top-40 -right-40 w-80 h-80 bg-amber-200/20 dark:bg-amber-700/10 rounded-full blur-3xl"
           animate={{
             scale: [1, 1.2, 1],
             rotate: [0, 90, 0],
@@ -612,7 +684,7 @@ export default function DocumentParserPage() {
           }}
         />
         <motion.div
-          className="absolute -bottom-40 -left-40 w-80 h-80 bg-gray-300/5 dark:bg-gray-700/5 rounded-full blur-3xl"
+          className="absolute -bottom-40 -left-40 w-80 h-80 bg-orange-200/20 dark:bg-orange-700/10 rounded-full blur-3xl"
           animate={{
             scale: [1.2, 1, 1.2],
             rotate: [0, -90, 0],
@@ -623,6 +695,119 @@ export default function DocumentParserPage() {
             ease: "linear",
           }}
         />
+        
+        {/* Floating Icons */}
+        <motion.div
+          className="absolute top-[8%] left-[3%] w-56 h-56 opacity-50 dark:opacity-30"
+          animate={{
+            y: [0, -35, 0],
+            rotate: [0, 12, -12, 0],
+          }}
+          transition={{
+            duration: 13,
+            repeat: Infinity,
+            ease: "easeInOut",
+          }}
+        >
+          <Image src="/icons/spis.png" alt="" width={224} height={224} className="w-full h-full object-contain" />
+        </motion.div>
+        
+        <motion.div
+          className="absolute top-[15%] right-[5%] w-64 h-64 opacity-50 dark:opacity-30"
+          animate={{
+            y: [0, 45, 0],
+            rotate: [0, -18, 18, 0],
+          }}
+          transition={{
+            duration: 17,
+            repeat: Infinity,
+            ease: "easeInOut",
+            delay: 1,
+          }}
+        >
+          <Image src="/icons/konverzija.png" alt="" width={256} height={256} className="w-full h-full object-contain" />
+        </motion.div>
+        
+        <motion.div
+          className="absolute top-[50%] left-[2%] w-44 h-44 opacity-50 dark:opacity-30"
+          animate={{
+            y: [0, -30, 0],
+            x: [0, 15, 0],
+          }}
+          transition={{
+            duration: 15,
+            repeat: Infinity,
+            ease: "easeInOut",
+            delay: 2,
+          }}
+        >
+          <Image src="/icons/tablica.png" alt="" width={176} height={176} className="w-full h-full object-contain" />
+        </motion.div>
+        
+        <motion.div
+          className="absolute bottom-[20%] left-[8%] w-52 h-52 opacity-50 dark:opacity-30"
+          animate={{
+            y: [0, 30, 0],
+            rotate: [0, 15, 0],
+          }}
+          transition={{
+            duration: 14,
+            repeat: Infinity,
+            ease: "easeInOut",
+            delay: 3,
+          }}
+        >
+          <Image src="/icons/konverzija.png" alt="" width={208} height={208} className="w-full h-full object-contain" />
+        </motion.div>
+        
+        <motion.div
+          className="absolute top-[35%] right-[3%] w-60 h-60 opacity-50 dark:opacity-30"
+          animate={{
+            y: [0, -25, 0],
+            x: [0, -20, 0],
+            rotate: [0, -12, 12, 0],
+          }}
+          transition={{
+            duration: 16,
+            repeat: Infinity,
+            ease: "easeInOut",
+            delay: 4,
+          }}
+        >
+          <Image src="/icons/spis.png" alt="" width={240} height={240} className="w-full h-full object-contain" />
+        </motion.div>
+        
+        <motion.div
+          className="absolute bottom-[10%] right-[10%] w-56 h-56 opacity-50 dark:opacity-30"
+          animate={{
+            y: [0, -40, 0],
+            rotate: [0, 20, -20, 0],
+          }}
+          transition={{
+            duration: 19,
+            repeat: Infinity,
+            ease: "easeInOut",
+            delay: 5,
+          }}
+        >
+          <Image src="/icons/tablica.png" alt="" width={224} height={224} className="w-full h-full object-contain" />
+        </motion.div>
+        
+        <motion.div
+          className="absolute top-[70%] left-[15%] w-44 h-44 opacity-50 dark:opacity-30"
+          animate={{
+            y: [0, 28, 0],
+            x: [0, 12, 0],
+          }}
+          transition={{
+            duration: 12,
+            repeat: Infinity,
+            ease: "easeInOut",
+            delay: 1.5,
+          }}
+        >
+          <Image src="/icons/konverzija.png" alt="" width={176} height={176} className="w-full h-full object-contain" />
+        </motion.div>
       </div>
 
       <div className="container mx-auto px-4 py-12 max-w-7xl relative z-10">
@@ -641,9 +826,9 @@ export default function DocumentParserPage() {
           >
             <Image 
               src="/data-transformation.png" 
-              alt="Arhiv Parser" 
-              width={112}
-              height={112}
+              alt="Državni Arhiv u Varaždinu" 
+              width={224}
+              height={224} 
               className="w-24 h-24 md:w-28 md:h-28"
               priority
             />
@@ -653,11 +838,11 @@ export default function DocumentParserPage() {
             initial={{ scale: 0 }}
             animate={{ scale: 1 }}
             transition={{ delay: 0.25, type: "spring", stiffness: 200 }}
-            className="inline-flex items-center gap-2 mb-4 px-4 py-2 bg-slate-200 dark:bg-slate-800/50 rounded-full border border-slate-300 dark:border-slate-700"
+            className="inline-flex items-center gap-2 mb-4 px-4 py-2 bg-amber-100 dark:bg-amber-900/30 rounded-full border border-amber-200 dark:border-amber-800"
           >
-            <Sparkles className="h-4 w-4 text-slate-700 dark:text-slate-300" />
-            <span className="text-sm font-medium text-slate-700 dark:text-slate-300">
-              AI-Powered Extraction
+            <Sparkles className="h-4 w-4 text-amber-700 dark:text-amber-300" />
+            <span className="text-sm font-medium text-amber-800 dark:text-amber-200">
+              AI Obrada Inventara
             </span>
           </motion.div>
           
@@ -666,9 +851,9 @@ export default function DocumentParserPage() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.35, duration: 0.6 }}
-              className="text-5xl md:text-6xl font-bold text-balance bg-clip-text text-transparent bg-gradient-to-r from-slate-900 via-gray-800 to-slate-900 dark:from-white dark:via-slate-200 dark:to-white"
+              className="text-4xl md:text-5xl font-bold text-balance bg-clip-text text-transparent bg-gradient-to-r from-amber-900 via-orange-800 to-rose-900 dark:from-amber-100 dark:via-orange-200 dark:to-rose-100"
             >
-              Arhiv Parser
+              Državni Arhiv u Varaždinu
             </motion.h1>
             
             {/* Logout Button */}
@@ -693,9 +878,9 @@ export default function DocumentParserPage() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.5, duration: 0.6 }}
-            className="text-lg md:text-xl text-slate-600 dark:text-slate-400 text-pretty max-w-2xl mx-auto mb-6"
+            className="text-lg md:text-xl text-amber-900/80 dark:text-amber-200/90 text-pretty max-w-2xl mx-auto mb-6"
           >
-            Transform archival documents into structured, searchable data with AI-powered extraction
+            Digitalna obrada arhivskih inventara uz pomoć umjetne inteligencije
           </motion.p>
           
           {/* Feature Highlights */}
@@ -703,23 +888,23 @@ export default function DocumentParserPage() {
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.6, duration: 0.6 }}
-            className="flex flex-wrap items-center justify-center gap-4 text-sm text-slate-600 dark:text-slate-400"
+            className="flex flex-wrap items-center justify-center gap-4 text-sm text-amber-800 dark:text-amber-300"
           >
             <div className="flex items-center gap-2">
               <div className="w-2 h-2 rounded-full bg-emerald-500" />
-              <span>Real-time Streaming</span>
+              <span>Obrada u Stvarnom Vremenu</span>
             </div>
             <div className="flex items-center gap-2">
               <div className="w-2 h-2 rounded-full bg-blue-500" />
-              <span>Croatian Standards</span>
+              <span>Hrvatski Standard</span>
             </div>
             <div className="flex items-center gap-2">
               <div className="w-2 h-2 rounded-full bg-purple-500" />
               <span>CSV Export</span>
             </div>
             <div className="flex items-center gap-2">
-              <div className="w-2 h-2 rounded-full bg-amber-500" />
-              <span>Multi-format Support</span>
+              <div className="w-2 h-2 rounded-full bg-rose-500" />
+              <span>Podrška za PDF, DOC, DOCX</span>
             </div>
           </motion.div>
         </motion.div>
@@ -730,13 +915,13 @@ export default function DocumentParserPage() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.6, duration: 0.6 }}
         >
-          <Card className="mb-6 border-slate-300/50 dark:border-slate-700/50 shadow-lg bg-white/90 dark:bg-slate-900/90">
+          <Card className="mb-6 border-amber-200/50 dark:border-amber-800/50 shadow-lg bg-white/95 dark:bg-slate-900/95 backdrop-blur-sm">
             <CardHeader>
               <CardTitle className="text-lg flex items-center gap-2">
                 <FileText className="h-5 w-5" />
-                Try a Sample Document
+                Isprobajte Primjer Dokumenta
               </CardTitle>
-              <CardDescription>Click to load and process an example archival document</CardDescription>
+              <CardDescription>Kliknite za učitavanje i obradu primjera arhivskog inventara</CardDescription>
             </CardHeader>
             <CardContent>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
@@ -806,9 +991,9 @@ export default function DocumentParserPage() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.7, duration: 0.6 }}
         >
-          <Card className="mb-8 border-slate-300/50 dark:border-slate-700/50 shadow-xl backdrop-blur-sm bg-white/90 dark:bg-slate-900/90 overflow-hidden">
+          <Card className="mb-8 border-amber-200/50 dark:border-amber-800/50 shadow-xl backdrop-blur-sm bg-white/95 dark:bg-slate-900/95 overflow-hidden">
             <motion.div
-              className="absolute inset-0 bg-gradient-to-r from-slate-500/3 via-gray-500/3 to-slate-500/3"
+              className="absolute inset-0 bg-gradient-to-r from-amber-500/5 via-orange-500/5 to-rose-500/5"
               animate={{
                 backgroundPosition: ["0% 50%", "100% 50%", "0% 50%"],
               }}
@@ -826,21 +1011,21 @@ export default function DocumentParserPage() {
                 >
                   <FileText className="h-6 w-6 text-slate-700 dark:text-slate-300" />
                 </motion.div>
-                Upload Document
+                Učitajte Dokument
               </CardTitle>
-              <CardDescription className="text-base">Supported formats: PDF, TXT, DOC, DOCX</CardDescription>
+              <CardDescription className="text-base">Podržani formati: PDF, TXT, DOC, DOCX</CardDescription>
               <motion.div
                 initial={{ opacity: 0, y: -5 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.8 }}
                 className="mt-3 flex items-start gap-2 p-3 bg-amber-50 dark:bg-amber-900/10 border border-amber-200 dark:border-amber-800/30 rounded-lg"
               >
-                <div className="flex-shrink-0 mt-0.5">
-                  <div className="w-1.5 h-1.5 rounded-full bg-amber-500" />
-                </div>
-                <p className="text-xs text-amber-700 dark:text-amber-400 leading-relaxed">
-                  <strong>Demo Limitation:</strong> Extraction limited to 15 records per document • CSV export disabled
-                </p>
+                  <div className="flex-shrink-0 mt-0.5">
+                    <div className="w-1.5 h-1.5 rounded-full bg-amber-500" />
+                  </div>
+                  <p className="text-xs text-amber-700 dark:text-amber-400 leading-relaxed">
+                    <strong>Napomena:</strong> Alat ekstrahira sve zapise iz dokumenta
+                  </p>
               </motion.div>
             </CardHeader>
             <CardContent className="relative z-10">
@@ -872,10 +1057,10 @@ export default function DocumentParserPage() {
                             {file.name}
                           </span>
                         ) : (
-                          "Click to upload or drag and drop"
+                          "Kliknite za učitavanje ili povucite datoteku"
                         )}
                       </p>
-                      <p className="text-xs text-slate-500 dark:text-slate-400">PDF, TXT, DOC, or DOCX up to 10MB</p>
+                      <p className="text-xs text-slate-500 dark:text-slate-400">PDF, TXT, DOC ili DOCX do 10MB</p>
                     </motion.div>
                     <input
                       id="file-upload"
@@ -904,20 +1089,20 @@ export default function DocumentParserPage() {
                   <Button
                     onClick={handleUpload}
                     disabled={!file || loading}
-                    className="w-full bg-gradient-to-r from-slate-800 to-gray-900 hover:from-slate-900 hover:to-black text-white shadow-lg border border-slate-700"
+                    className="w-full bg-gradient-to-r from-amber-700 to-orange-800 hover:from-amber-800 hover:to-orange-900 text-white shadow-lg border border-amber-600"
                     size="lg"
                   >
                     {loading ? (
                       <>
                         <Loader2 className="mr-2 h-5 w-5 animate-spin" />
                         {extractedData.length > 0
-                          ? `Streaming... ${extractedData.length} record${extractedData.length !== 1 ? "s" : ""} found`
-                          : "Processing..."}
+                          ? `Obrada... ${extractedData.length} zapis${extractedData.length !== 1 ? "a" : ""} pronađeno`
+                          : "Obrada u tijeku..."}
                       </>
                     ) : (
                       <>
                         <FileText className="mr-2 h-5 w-5" />
-                        Parse Document
+                        Obradi Dokument
                       </>
                     )}
                   </Button>
@@ -935,9 +1120,9 @@ export default function DocumentParserPage() {
               exit={{ opacity: 0, y: 40, scale: 0.95 }}
               transition={{ duration: 0.5, type: "spring", stiffness: 100 }}
             >
-              <Card className="border-slate-300/50 dark:border-slate-700/50 shadow-2xl backdrop-blur-sm bg-white/90 dark:bg-slate-900/90 overflow-hidden">
+              <Card className="border-amber-200/50 dark:border-amber-800/50 shadow-2xl backdrop-blur-sm bg-white/95 dark:bg-slate-900/95 overflow-hidden">
                 <motion.div
-                  className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-slate-700 via-gray-700 to-slate-700"
+                  className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-amber-600 via-orange-600 to-rose-600"
                   initial={{ scaleX: 0 }}
                   animate={{ scaleX: 1 }}
                   transition={{ duration: 0.8, delay: 0.2 }}
@@ -953,7 +1138,7 @@ export default function DocumentParserPage() {
                         >
                           <CheckCircle2 className="h-6 w-6 text-emerald-600 dark:text-emerald-400" />
                         </motion.div>
-                        Extracted Records
+                        Ekstrahirani Zapisi
                         {loading && (
                           <motion.span
                             initial={{ scale: 0 }}
@@ -965,7 +1150,7 @@ export default function DocumentParserPage() {
                               transition={{ duration: 1.5, repeat: Infinity }}
                               className="w-2 h-2 bg-slate-700 dark:bg-slate-300 rounded-full"
                             />
-                            Live Streaming
+                            Obrada Uživo
                           </motion.span>
                         )}
                       </CardTitle>
@@ -978,8 +1163,8 @@ export default function DocumentParserPage() {
                         >
                           {extractedData.length}
                         </motion.span>{" "}
-                        record{extractedData.length !== 1 ? "s" : ""} extracted
-                        {loading && " (updating in real-time...)"}
+                        zapis{extractedData.length !== 1 ? "a" : ""} ekstrahirano
+                        {loading && " (ažuriranje u stvarnom vremenu...)"}
                       </CardDescription>
                     </div>
                     <motion.div
@@ -988,9 +1173,9 @@ export default function DocumentParserPage() {
                       transition={{ delay: 0.3 }}
                     >
                       <div className="px-4 py-2 bg-slate-100 dark:bg-slate-800/50 rounded-lg border border-slate-300 dark:border-slate-700 flex items-center gap-2">
-                        <Lock className="h-4 w-4 text-slate-500 dark:text-slate-400" />
+                        <Download className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
                         <span className="text-xs font-medium text-slate-600 dark:text-slate-400">
-                          Export Locked (Demo)
+                          CSV Export Dostupan
                         </span>
                       </div>
                     </motion.div>
@@ -1021,7 +1206,7 @@ export default function DocumentParserPage() {
                 <div className="bg-slate-50 dark:bg-slate-800/50 rounded-lg p-3">
                   <div className="text-xs text-slate-500 dark:text-slate-400">Model</div>
                   <div className="text-sm font-medium text-slate-700 dark:text-slate-300">
-                    GPT-4o Mini
+                    Gemini 2.5 Flash Lite
                   </div>
                 </div>
                 <div className="bg-slate-50 dark:bg-slate-800/50 rounded-lg p-3">
@@ -1224,21 +1409,16 @@ export default function DocumentParserPage() {
           transition={{ delay: 1, duration: 0.6 }}
           className="mt-16 pb-8 text-center"
         >
-          <div className="text-sm text-slate-600 dark:text-slate-400">
+          <div className="text-sm text-amber-900/80 dark:text-amber-200/80">
             <p className="flex items-center justify-center gap-2">
-              <span>Demo built by</span>
-              <a 
-                href="https://mindxglobal.com" 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="font-semibold hover:text-slate-900 dark:hover:text-slate-200 transition-colors"
-              >
-                MindX Global
-              </a>
-              <span>🖤</span>
+              <span>©</span>
+              <span className="font-semibold">
+                Državni Arhiv u Varaždinu
+              </span>
+              <span>2025</span>
             </p>
             <p className="mt-2 text-xs">
-              Powered by GPT-4o Mini via OpenRouter • Real-time streaming extraction • Demo version
+              AI obrada arhivskih inventara • Gemini 2.5 Flash Lite • Obrada u stvarnom vremenu
             </p>
           </div>
         </motion.footer>
